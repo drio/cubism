@@ -59,40 +59,11 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
      * 2. pagination: Currently the API will return only 100 measurements from a metric
      */
     return context.metric(function(start, stop, step, callback) {
-
       // TODO: step
       librato_request(m_name, m_source)
         .fire(cubism_libratoFormatDate(start),
               cubism_libratoFormatDate(stop),
               function(a_values) { callback(null, a_values); });
-
-      /*
-      d3.json(host + "/" + uriPathPrefix
-          + "/"             + encodeURIComponent(expression)
-          + "&start_time="  + cubism_cubeFormatDate(start)
-          + "&end_time="    + cubism_cubeFormatDate(stop)
-          + "&resolution="  + cubism_cubeFormatDate(stop), function(data) {
-        if (!data) return callback(new Error("unable to load data"));
-        callback(null, [1, 2, 3, 4]); // TODO
-      });
-      */
-
-      // Generate random values; for testing
-      /*
-      var values = [];
-
-      // convert start & stop to milliseconds
-      start = +start;
-      stop = +stop;
-
-      while (start < stop) {
-        start += step;
-        values.push(Math.random());
-      }
-
-      callback(null, values);
-      */
-
       }, m_name += "");
     };
 
