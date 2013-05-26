@@ -2,7 +2,11 @@
 cubism_contextPrototype.librato = function(user, token) { // librato = context.librato(user, token)
   var source      = {},
       context     = this;
-      auth_string = btoa(user + ":" + token);
+      auth_string = "Basic " + btoa(user + ":" + token);
+
+  console.log("user: " + user);
+  console.log("token: " + token);
+  console.log(auth_string);
 
   /* All the logic to query the libratp API is here */
   var librato_request = function(metric, source) {
@@ -38,7 +42,8 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
                 callback_done(a_values);
               }
             } else {
-              console.log("There was an error when performing request to librato.");
+              console.log("There was an error when performing request to librato:");
+              console.log(error);
             }
           });
       }
@@ -50,7 +55,6 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
   };
 
 
-  console.log("user: " + user);
   source.metric = function(m_name, m_source) { // librato.metric("hgsc_active_jobs", "ardmore")
     /*
      * TODO:
@@ -64,6 +68,7 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
         .fire(cubism_libratoFormatDate(start),
               cubism_libratoFormatDate(stop),
               function(a_values) { callback(null, a_values); });
+
       }, m_name += "");
     };
 
