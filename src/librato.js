@@ -10,7 +10,7 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
 
   /* All the logic to query the libratp API is here */
   var librato_request = function(metric, source) {
-    var resolution   = 60; // TODO: Dynamic
+    var resolution   = 60; // 1 sec
         url_prefix   = "https://metrics-api.librato.com/v1/metrics";
 
     function make_url(sdate, edate) {
@@ -32,6 +32,7 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
           .header("Authorization", auth_string)
           .get(function (error, data) { // Callback data available
             if (!error) {
+              console.log("# of partial measurements: " + data.measurements[source].length)
               data.measurements[source].forEach(function(o) { a_values.push(o.value); });
               var still_more_values = 'query' in data && 'next_time' in data.query;
               if (still_more_values) {
@@ -56,14 +57,9 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
 
 
   source.metric = function(m_name, m_source) { // librato.metric("hgsc_active_jobs", "ardmore")
-    /*
-     * TODO:
-     * 1. librato's api doesn't have the _step_ feature but we have
-     *    a hardcode set of values (resolution); hardcode to 60 for the moment
-     * 2. pagination: Currently the API will return only 100 measurements from a metric
-     */
     return context.metric(function(start, stop, step, callback) {
       // TODO: step
+      console.log("START: " + start + "; STOP: " + stop + "; STEP: " + step);
       librato_request(m_name, m_source)
         .fire(cubism_libratoFormatDate(start),
               cubism_libratoFormatDate(stop),
@@ -72,7 +68,7 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
       }, m_name += "");
     };
 
-  // Returns the librato host. ??
+  // TODO: Returns the librato host ?
   source.toString = function() {
     return "host here ??";
   };
