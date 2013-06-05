@@ -4,13 +4,9 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
       context     = this;
       auth_string = "Basic " + btoa(user + ":" + token);
 
-  console.log("user: " + user);
-  console.log("token: " + token);
-  console.log(auth_string);
-
   /* All the logic to query the libratp API is here */
   var librato_request = function(metric, source) {
-    var resolution   = 60; // 1 sec
+    var resolution   = 1; // 1 min
         url_prefix   = "https://metrics-api.librato.com/v1/metrics";
 
     function make_url(sdate, edate) {
@@ -30,9 +26,10 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
         d3.json(full_url)
           .header("X-Requested-With", "XMLHttpRequest")
           .header("Authorization", auth_string)
-          .get(function (error, data) { // Callback data available
+          .get(function (error, data) { /* Callback; data available */
             if (!error) {
-              console.log("# of partial measurements: " + data.measurements[source].length)
+              console.log("# of partial measurements: " + data.measurements[source].length);
+              /* We have to return 1 measurement per second */
               data.measurements[source].forEach(function(o) { a_values.push(o.value); });
               var still_more_values = 'query' in data && 'next_time' in data.query;
               if (still_more_values) {
@@ -50,7 +47,7 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
       }
 
       actual_request(make_url(isdate, iedate));
-    }
+    };
 
     return request;
   };
@@ -78,4 +75,4 @@ cubism_contextPrototype.librato = function(user, token) { // librato = context.l
 
 var cubism_libratoFormatDate = function(time) {
   return Math.floor(time / 1000);
-}
+};
