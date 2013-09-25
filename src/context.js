@@ -1,6 +1,7 @@
 cubism.context = function() {
   var context = new cubism_context,
-      step = 1e4, // ten seconds, in milliseconds
+      //step = 1e4, // ten seconds, in milliseconds
+      step = 10000,
       size = 1440, // four hours at ten seconds, in pixels
       start0, stop0, // the start and stop for the previous change event
       start1, stop1, // the start and stop for the next prepare event
@@ -12,11 +13,17 @@ cubism.context = function() {
       focus;
 
   function update() {
-    var now = Date.now();
-    stop0 = new Date(Math.floor((now - serverDelay - clientDelay) / step) * step);
-    start0 = new Date(stop0 - size * step);
-    stop1 = new Date(Math.floor((now - serverDelay) / step) * step);
-    start1 = new Date(stop1 - size * step);
+    //var now = Date.now();
+    var now = { 'chrm': 'Y', 'coor': 100e3 }; // TODO: user has to set current location when creating context
+    //stop0 = new Date(Math.floor((now - serverDelay - clientDelay) / step) * step);
+    //start0 = new Date(stop0 - size * step);
+    stop0 = now.coor;
+    start0 = now.coor - (size * step); // TODO: we may reach the beginning of a chrm... we should set to 0 then
+    // We are not going to use this for the moment; setting useless values
+    //stop1 = new Date(Math.floor((now - serverDelay) / step) * step);
+    //start1 = new Date(stop1 - size * step);
+    stop1 = 10000000;
+    start1 = stop1 - 10000;
     scale.domain([start0, stop0]);
     return context;
   }
